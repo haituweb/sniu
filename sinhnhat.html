@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>letter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #fff5f8, #ffe9f0, #ffd4e6);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Hiệu ứng nền sạch + nhẹ nhàng */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(circle at 20% 30%, rgba(255, 200, 220, 0.35), transparent 60%),
+                        radial-gradient(circle at 80% 70%, rgba(255, 180, 210, 0.25), transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+            animation: softGlow 15s ease infinite;
+        }
+
+        @keyframes softGlow {
+            0%, 100% { opacity: 0.85; }
+            50% { opacity: 1; }
+        }
+
+        .hearts {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .heart {
+            position: absolute;
+            color: #ff9eb7;
+            font-size: 13px;
+            opacity: 0.65;
+            animation: floatHeart 11s linear infinite;
+        }
+
+        @keyframes floatHeart {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0.65;
+            }
+            100% {
+                transform: translateY(-50px) translateX(25px);
+                opacity: 0;
+            }
+        }
+
+        .envelope {
+            position: relative;
+            width: 280px;
+            height: 205px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+            perspective: 1000px;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .envelope-flap {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: #fff;
+            border-radius: 10px;
+            transform-origin: top;
+            transition: transform 1s ease;
+            z-index: 2;
+        }
+
+        .envelope-flap::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 50%;
+            background: #ffe0ee;
+            clip-path: polygon(0 0, 50% 100%, 100% 0);
+        }
+
+        .envelope.closed .envelope-flap { transform: rotateX(0deg); }
+        .envelope:not(.closed) .envelope-flap { transform: rotateX(-180deg); }
+
+        .letter {
+            position: absolute;
+            top: 10px; left: 10px; right: 10px; bottom: 10px;
+            background: rgba(255, 255, 255, 0.97);
+            padding: 12px;
+            border-radius: 5px;
+            overflow-y: auto;
+            opacity: 0;
+            transition: opacity 0.5s ease 0.5s;
+            z-index: 3;
+        }
+
+        .envelope:not(.closed) .letter { opacity: 1; }
+
+        h1, p, .signature, .heart-symbol {
+            position: relative;
+            z-index: 4;
+        }
+
+        /* Các style chữ giữ nguyên */
+        h1 {
+            color: #d9534f;
+            text-align: center;
+            font-family: 'Caveat', cursive;
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        p {
+            line-height: 1.55;
+            font-size: 13px;
+            margin: 6px 0;
+        }
+
+        .signature {
+            text-align: right;
+            font-style: italic;
+            font-size: 13.5px;
+            margin-top: 10px;
+            font-family: 'Caveat', cursive;
+        }
+
+        .heart-symbol {
+            color: #d9534f;
+            font-size: 17px;
+            text-align: center;
+            margin-top: 8px;
+        }
+
+        .word {
+            display: inline-block;
+            opacity: 0;
+            transform: translateX(8px);
+        }
+
+        @keyframes wordTyping {
+            from { opacity: 0; transform: translateX(8px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @media (max-width: 600px) {
+            .envelope {
+                width: 82vw;
+                max-width: 260px;
+                height: 195px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="hearts" id="hearts"></div>
+    <div class="envelope closed" id="envelope">
+        <div class="envelope-flap"></div>
+        <div class="letter">
+            <h1>Lá Thư Tâm Tình</h1>
+            <p>Gửi em bíe đặc biệt của tớ</p>
+            <p>Hôm nay là ngày đặc biệt của cậu – là ngày mà thế giới của tớ được sinh raa.</p>
+            <p>Dù cậu không còn là một “đứa trẻ” nữa, nhưng trong mắt tớ cậu vẫn luôn là iem bé tớ muốn yêu thương và chở che.</p>
+            <p>Chúc cậu luôn xinh đẹp và rạng rỡ tiếng cười.</p>
+            <p>Thương cậu,</p>
+            <p class="signature">Dear<br>[htuuuuu]</p>
+            <p class="heart-symbol">❤️</p>
+        </div>
+    </div>
+
+    <script>
+        function createHearts() {
+            const container = document.getElementById('hearts');
+            for (let i = 0; i < 10; i++) {   // Giảm số lượng trái tim cho sạch hơn
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.innerHTML = '❤️';
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.animationDuration = (9 + Math.random() * 5) + 's';
+                heart.style.animationDelay = '-' + Math.random() * 10 + 's';
+                container.appendChild(heart);
+            }
+        }
+
+        const envelope = document.getElementById('envelope');
+        let isOpened = false;
+
+        envelope.addEventListener('click', () => {
+            if (!isOpened) {
+                envelope.classList.remove('closed');
+                isOpened = true;
+                applyWordTypingAnimation();
+            } else {
+                envelope.classList.add('closed');
+                setTimeout(() => {
+                    window.location.href = 'banh.html';
+                }, 800);
+            }
+        });
+
+        function applyWordTypingAnimation() {
+            const paragraphs = document.querySelectorAll('.letter p:not(.signature):not(.heart-symbol)');
+            let delay = 500;
+
+            paragraphs.forEach(p => {
+                const words = p.textContent.trim().split(/\s+/);
+                p.innerHTML = words.map(word => 
+                    `<span class="word" style="animation: wordTyping 0.32s ease-out forwards; animation-delay: ${delay}ms">${word}</span>`
+                ).join(' ');
+                delay += words.length * 80;
+            });
+        }
+
+        window.onload = createHearts;
+    </script>
+</body>
+</html>
